@@ -2,30 +2,32 @@
 
 .tab {
 	overflow: hidden;
-	background-color: #000000;
-	border: solid 2px;
+	background-color: #180822;
+	border: solid 0.6mm;
 	color: #E72028;
+	position: sticky;
+	top: 0;
+	margin: 4px 4px 8px 4px;
 }
 
 .tab button {
 	font-size: large;
     font-family: 'PerfectDos437';
-	background-color: inherit;
+	background-color: #180822;
 	color: #E72028;
 	float: left;
-	border: solid 2px;
+	border: solid 0.6mm;
 	border-radius: 0px;
 	outline: none;
 	cursor: pointer;
-	margin: 4px;
+	margin: 1.5mm;
 	padding: 14px 16px;
-	transition: 0.3s;
 }
 
 .tab button:hover {
 	background-color: #E72028;
 	color: black;
-	border-color: #510000;
+	border-color: #E72028;
 }
 
 .tab button.active {
@@ -41,7 +43,7 @@
 .site-entry {
 	background-color: #340000;
 	color: #E72028;
-	border: solid 2px;
+	border: solid 0.6mm;
 	border-radius: 0px;
 	padding: 16px;
 	margin-bottom: 8px;
@@ -50,7 +52,7 @@
 .site-entry-top {
 	background-color: #510000;
 	color: #F77979;
-	border: solid 2px;
+	border: solid 0.6mm;
 	border-color: #E72028;
 	border-radius: 0px;
 	padding: 16px;
@@ -79,4 +81,18 @@ p {
 
 a {
 	color: #F77979;
+}
+
+.star {
+	position: fixed;
+	width: 4pt;
+	height: 4pt;
+	background: white;
+	z-index: -3;
+  }
+
+.shooting-star {
+	position: fixed;
+	z-index: -1;
+	image-rendering: pixelated;
 }
