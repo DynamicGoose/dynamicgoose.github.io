@@ -2,10 +2,14 @@ window.addEventListener("load", function () {
 	this.document.getElementById("defaultOpen").click();
 	shootingStar();
 	stars()
+	if (this.window.innerWidth <= 1200) {
+		this.document.body.style.width = '100%';
+	} else {
+		this.document.body.style.width = '60%';
+	}
 });
 
 window.addEventListener("resize", function () {
-	console.log(this.window.innerWidth);
 	if (this.window.innerWidth <= 1200) {
 		this.document.body.style.width = '100%';
 	} else {
@@ -32,8 +36,8 @@ function openTab(evt, tabName) {
 
 function stars() {
 	for(var i = 0 ; i < 500 ; i++) {
-		var x = Math.random() * screen.width
-		var y = Math.random() * screen.width;
+		var x = Math.random() * window.innerWidth;
+		var y = Math.random() * window.innerHeight;
 		var star = document.createElement('div');
 		star.className = 'star';
 		star.style.left = x + 'px';
