@@ -1,1 +1,1 @@
-# [My personal website](dynamicgoose.github.io)
+# [My personal website](https://dynamicgoose.github.io)
