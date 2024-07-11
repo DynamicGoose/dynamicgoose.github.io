@@ -1,0 +1,82 @@
+@font-face { font-family: "PerfectDos437"; src: url('assets/PerfectDOSVGA437.ttf'); } 
+
+.tab {
+	overflow: hidden;
+	background-color: #000000;
+	border: solid 2px;
+	color: #E72028;
+}
+
+.tab button {
+	font-size: large;
+    font-family: 'PerfectDos437';
+	background-color: inherit;
+	color: #E72028;
+	float: left;
+	border: solid 2px;
+	border-radius: 0px;
+	outline: none;
+	cursor: pointer;
+	margin: 4px;
+	padding: 14px 16px;
+	transition: 0.3s;
+}
+
+.tab button:hover {
+	background-color: #E72028;
+	color: black;
+	border-color: #510000;
+}
+
+.tab button.active {
+	background-color: #510000;
+	color: #F77979;
+	border-color: #E72028;
+}
+
+.tabcontent {
+	margin: 4px;
+}
+
+.site-entry {
+	background-color: #340000;
+	color: #E72028;
+	border: solid 2px;
+	border-radius: 0px;
+	padding: 16px;
+	margin-bottom: 8px;
+}
+
+.site-entry-top {
+	background-color: #510000;
+	color: #F77979;
+	border: solid 2px;
+	border-color: #E72028;
+	border-radius: 0px;
+	padding: 16px;
+	margin-bottom: 8px;
+}
+
+h1 {
+	margin: 0;
+}
+
+h2 {
+	margin: 0;
+}
+
+h3 {
+	margin: 0;
+}
+
+h4 {
+	margin: 0;
+}
+
+p {
+	margin-bottom: 0px;
+}
+
+a {
+	color: #F77979;
+}
