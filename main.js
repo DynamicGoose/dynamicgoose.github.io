@@ -1,8 +1,13 @@
 window.addEventListener("load", function () {
-	if ('tab' in this.sessionStorage) {
-		this.document.getElementById(this.sessionStorage.getItem('tab')).click();
-	} else {
-		this.document.getElementById('TabHome').click()
+	if (this.document.getElementById('tabs_enable')) {
+		if ('tab' in this.sessionStorage) {
+			this.document.getElementById(this.sessionStorage.getItem('tab')).click();
+		} else {
+			this.document.getElementById('TabHome').click()
+		}
+	}
+	if (this.document.getElementById('blog')) {
+		openBlog(this.sessionStorage.getItem('blog'));
 	}
 	if (this.window.innerWidth <= 1200) {
 		this.document.body.style.width = '100%';
@@ -84,4 +89,13 @@ function shootingStar() {
 
 function despawnShootingStar() {
 	document.getElementById('shooting-star').remove();
+}
+
+function setBlog(path) {
+	sessionStorage.setItem('blog', path);
+	location.href = 'blog.html'
+}
+
+function openBlog(path) {
+	fetch(path).then( response => response.text() ).then( text => document.getElementById('blogpost').innerHTML = text);
 }

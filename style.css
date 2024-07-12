@@ -62,6 +62,32 @@
 	margin-bottom: 8px;
 }
 
+button {
+	font-size: large;
+	font-family: 'PerfectDos437';
+	background-color: #180822;
+	color: #E72028;
+	float: left;
+	border: solid 0.6mm;
+	border-radius: 0px;
+	outline: none;
+	cursor: pointer;
+	margin: 1.5mm;
+	padding: 14px 16px;
+}
+
+button:hover {
+	background-color: #E72028;
+	color: black;
+	border-color: #E72028;
+}
+
+button.active {
+	background-color: #510000;
+	color: #F77979;
+	border-color: #E72028;
+}
+
 h1 {
 	margin: 0;
 }
