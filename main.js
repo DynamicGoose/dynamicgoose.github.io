@@ -1,12 +1,17 @@
 window.addEventListener("load", function () {
-	this.document.getElementById("defaultOpen").click();
-	shootingStar();
-	stars()
+	if ('tab' in this.sessionStorage) {
+		this.document.getElementById(this.sessionStorage.getItem('tab')).click();
+	} else {
+		this.document.getElementById('TabHome').click()
+	}
 	if (this.window.innerWidth <= 1200) {
 		this.document.body.style.width = '100%';
 	} else {
 		this.document.body.style.width = '60%';
 	}
+
+	shootingStar();
+	stars();
 });
 
 window.addEventListener("resize", function () {
@@ -15,6 +20,8 @@ window.addEventListener("resize", function () {
 	} else {
 		this.document.body.style.width = '60%';
 	}
+
+	stars();
 })
 
 function openTab(evt, tabName) {
@@ -32,10 +39,16 @@ function openTab(evt, tabName) {
 
 	document.getElementById(tabName).style.display = "block";
 	evt.currentTarget.className += " active";
+	sessionStorage.setItem('tab', 'Tab' + tabName);
 }
 
 function stars() {
-	for(var i = 0 ; i < 500 ; i++) {
+	var stars = document.getElementsByClassName('star');
+	while (stars[0]) {
+		stars[0].remove();
+	}
+
+	for (var i = 0; i < ((window.innerHeight * window.innerWidth) / 4000); i++) {
 		var x = Math.random() * window.innerWidth;
 		var y = Math.random() * window.innerHeight;
 		var star = document.createElement('div');
@@ -44,7 +57,7 @@ function stars() {
 		star.style.top = y + 'px';
 		star.style.opacity = Math.random()
 		document.body.appendChild(star);
-	  }
+	}
 }
 
 function shootingStar() {
@@ -57,7 +70,7 @@ function shootingStar() {
 	star_div.style.top = y + 'px';
 
 	var star = document.createElement('img');
-	star.src = 'assets/Starry_night_star_640x360_once.gif';
+	star.src = '/assets/Starry_night_star_640x360_once.gif';
 	star.style.width = '300px';
 	if (Math.random() < 0.5) {
 		star.style.transform = 'scaleX(-1)';

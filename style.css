@@ -1,4 +1,7 @@
-@font-face { font-family: "PerfectDos437"; src: url('assets/PerfectDOSVGA437.ttf'); } 
+@font-face {
+	font-family: "PerfectDos437";
+	src: url('assets/PerfectDOSVGA437.ttf');
+}
 
 .tab {
 	overflow: hidden;
@@ -12,7 +15,7 @@
 
 .tab button {
 	font-size: large;
-    font-family: 'PerfectDos437';
+	font-family: 'PerfectDos437';
 	background-color: #180822;
 	color: #E72028;
 	float: left;
@@ -79,6 +82,12 @@ p {
 	margin-bottom: 0px;
 }
 
+p.subtitle {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	font-style: italic;
+}
+
 a {
 	color: #F77979;
 }
@@ -89,7 +98,7 @@ a {
 	height: 4pt;
 	background: white;
 	z-index: -3;
-  }
+}
 
 .shooting-star {
 	position: fixed;
