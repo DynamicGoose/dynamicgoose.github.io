@@ -96,6 +96,10 @@ h2 {
 	margin: 0;
 }
 
+h2.in-blog {
+	margin-top: 32px;
+}
+
 h3 {
 	margin: 0;
 }
