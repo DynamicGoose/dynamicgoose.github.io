@@ -1,5 +1,6 @@
 var shooting_star = true;
 var show_cursor = true;
+var play_visualizer = true;
 
 window.addEventListener("load", function () {
 	if (this.document.getElementById('tabs_enable')) {
@@ -51,6 +52,10 @@ window.addEventListener("resize", function () {
 
 	stars();
 })
+
+document.getElementById('audio').addEventListener("onpause", function () {
+	play_visualizer = false;
+});
 
 function openTab(evt, tabName) {
 	var i, tabcontent, tablinks;
@@ -228,6 +233,10 @@ function terminal_cursor() {
  * modified: https://github.com/DynamicGoose/
  */
 function visualizer(tag) {
+	if (!play_visualizer) {
+		play_visualizer = true;
+		return;
+	}
     var audio = document.getElementById(tag);
     var ctx = new AudioContext();
     var analyser = ctx.createAnalyser();
@@ -273,6 +282,6 @@ function visualizer(tag) {
         }
         requestAnimationFrame(renderFrame);
     }
-    renderFrame();
+	renderFrame();
     // audio.play();
 };
