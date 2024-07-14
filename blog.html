@@ -9,8 +9,13 @@
 
 <title>Géza's Stuff</title>
 
-<div style="position: fixed; z-index: -2; image-rendering: pixelated; left: 0; top: 100pt;"><img src="assets/planet.png"
-		alt="" style="width: 1024px;"></div>
+<div id="stars" style="z-index: -4; left: 0; transition: left 2s; position: fixed;"></div>
+
+<div id="terminal" style="position: fixed; z-index: -2; background-color: black; color: #00ff00; font-size: 96px; width: 1000px; height: 1000px; left: 16px; top: 16px; opacity: 1; border: solid 8px; border-color: #666666; transition: opacity 2s;">
+	>_
+</div>
+
+<canvas id="canvas" width="800" height="350" style="position: fixed; z-index: -1; left: 50px; top: 50px; opacity: 0; transition: opacity 2s;"></canvas>
 
 <body style="background-color: #180822; font-family: 'PerfectDos437'; color: white; width: 60%; margin: auto;">
 	<div class="tab">

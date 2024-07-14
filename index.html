@@ -9,8 +9,18 @@
 
 <title>Géza's Stuff</title>
 
-<div style="position: fixed; z-index: -2; image-rendering: pixelated; left: 0; top: 100pt;"><img src="assets/planet.png"
-		alt="" style="width: 1024px;"></div>
+<img id="planet" style="position: fixed; z-index: -3; image-rendering: pixelated; left: 0; top: 100pt; width: 1024px; transition: left 2s;" src="/assets/planet.png" alt="">
+<img id="station" style="position: fixed; z-index: -3; image-rendering: pixelated; right: -1330pt; top: 0; width: 1024px; transition: all 2s; transform: rotate(-10deg);" src="/assets/Citadel_Station.png">
+
+<div id="stars" style="z-index: -4; left: 0; transition: left 2s; position: fixed;"></div>
+
+<div id="terminal" style="position: fixed; z-index: -2; background-color: black; color: #00ff00; font-size: 96px; width: 1000px; height: 1000px; left: 16px; top: 16px; opacity: 0; border: solid 8px; border-color: #666666; transition: opacity 2s;">
+	>_
+</div>
+
+<shooting-star>
+
+<canvas id="canvas" width="800" height="350" style="position: fixed; z-index: -1; left: 50px; top: 50px; opacity: 0; transition: opacity 2s;"></canvas>
 
 <body style="background-color: #180822; font-family: 'PerfectDos437'; color: white; width: 60%; margin: auto;">
 	<div class="tab">
@@ -95,7 +105,13 @@
 	<div id="Music" class="tabcontent">
 		<div class=" site-entry-top">
 			<h1>Music</h1>
-			<p>Coming soon!</p>
+			<p>Have a little demo for what's to come!</p>
+		</div>
+		<div class="site-entry">
+			<h2>King of The Hill</h2>
+			<p class="subtitle">demo</p>
+			<br>
+			<audio src="assets/King of The Hill (demo).mp3" id="audio" controls onplay="visualizer('audio')">audio element not supported</audio>
 		</div>
 	</div>
 </body>

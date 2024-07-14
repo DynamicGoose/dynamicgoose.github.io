@@ -3,6 +3,11 @@
 	src: url('assets/PerfectDOSVGA437.ttf');
 }
 
+@keyframes planet {
+	from {left: 0pt;}
+	to {left: -670pt;}
+}
+
 .tab {
 	overflow: hidden;
 	background-color: #180822;
@@ -123,15 +128,15 @@ a {
 }
 
 .star {
-	position: fixed;
 	width: 4pt;
 	height: 4pt;
 	background: white;
 	z-index: -3;
+	position: absolute;
 }
 
 .shooting-star {
 	position: fixed;
-	z-index: -1;
+	z-index: -2;
 	image-rendering: pixelated;
 }
