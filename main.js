@@ -82,7 +82,7 @@ function transition(to) {
 	switch (to) {
 		case 'Home':
 			document.getElementById('planet').style.left = '0';
-			
+
 			var station = document.getElementById('station');
 			station.style.right = '-1330pt';
 			station.style.top = '0';
@@ -182,19 +182,19 @@ function shootingStar() {
 		star_div.id = 'shooting-star'
 		star_div.style.left = x + 'px';
 		star_div.style.top = y + 'px';
-	
+
 		var star = document.createElement('img');
 		star.src = '/assets/Starry_night_star_640x360_once.gif';
 		star.style.width = '300px';
 		if (Math.random() < 0.5) {
 			star.style.transform = 'scaleX(-1)';
 		}
-	
+
 		star_div.appendChild(star);
 		document.body.appendChild(star_div);
 		setTimeout(despawnShootingStar, 700);
 	}
-		setTimeout(shootingStar, Math.random() * 10000);
+	setTimeout(shootingStar, Math.random() * 10000);
 }
 
 function despawnShootingStar() {
@@ -207,7 +207,7 @@ function setBlog(path) {
 }
 
 function openBlog(path) {
-	fetch(path).then( response => response.text() ).then( text => document.getElementById('blogpost').innerHTML = text);
+	fetch(path).then(response => response.text()).then(text => document.getElementById('blogpost').innerHTML = text);
 }
 
 function terminal_cursor() {
@@ -237,51 +237,49 @@ function visualizer(tag) {
 		play_visualizer = true;
 		return;
 	}
-    var audio = document.getElementById(tag);
-    var ctx = new AudioContext();
-    var analyser = ctx.createAnalyser();
-    var audioSrc = ctx.createMediaElementSource(audio);
-    // we have to connect the MediaElementSource with the analyser 
-    audioSrc.connect(analyser);
-    analyser.connect(ctx.destination);
-    // we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
-    // analyser.fftSize = 64;
-    // frequencyBinCount tells you how many values you'll receive from the analyser
-    var frequencyData = new Uint8Array(analyser.frequencyBinCount);
+	var audio = document.getElementById(tag);
+	var ctx = new AudioContext();
+	var analyser = ctx.createAnalyser();
+	var audioSrc = ctx.createMediaElementSource(audio);
+	// we have to connect the MediaElementSource with the analyser 
+	audioSrc.connect(analyser);
+	analyser.connect(ctx.destination);
+	// we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
+	// analyser.fftSize = 64;
+	// frequencyBinCount tells you how many values you'll receive from the analyser
+	var frequencyData = new Uint8Array(analyser.frequencyBinCount);
 
-    // we're ready to receive some data!
-    var canvas = document.getElementById('canvas'),
-        cwidth = canvas.width,
-        cheight = canvas.height - 2,
-        meterWidth = (cwidth - 192) / 24, //width of the meters in the spectrum
-        gap = 8 //gap between meters
-        style = '#0f0',
-        meterNum = 24, //count of the meters
-        YPositionArray = []; //store the vertical position of hte caps for the preivous frame
-    ctx = canvas.getContext('2d');
-    // loop
-    function renderFrame() {
-        var array = new Uint8Array(analyser.frequencyBinCount);
-        analyser.getByteFrequencyData(array);
-        var step = Math.round((array.length / 2) / meterNum); //sample limited data from the total array
-        ctx.clearRect(0, 0, cwidth, cheight);
-        for (var i = 0; i < meterNum / 2; i++) {
-            var value = array[i * step];
-            if (YPositionArray.length < Math.round(meterNum)) {
-                YPositionArray.push(value);
-            };
-            ctx.fillStyle = style;
-            if (value < YPositionArray[i]) {
-                ctx.fillRect(i * (meterWidth + gap), cheight - (--YPositionArray[i]), meterWidth, cheight);
-                ctx.fillRect((meterNum - i - 1) * (meterWidth + gap), cheight - (--YPositionArray[i]), meterWidth, cheight);
-            } else {
-                ctx.fillRect(i * (meterWidth + gap), cheight - value, meterWidth, cheight);
-                ctx.fillRect((meterNum - i - 1) * (meterWidth + gap), cheight - value, meterWidth, cheight);
-                YPositionArray[i] = value;
-            };
-        }
-        requestAnimationFrame(renderFrame);
-    }
+	// we're ready to receive some data!
+	var canvas = document.getElementById('canvas'),
+		cwidth = canvas.width,
+		cheight = canvas.height - 2,
+		meterWidth = (cwidth - 192) / 24, //width of the meters in the spectrum
+		gap = 8 //gap between meters
+	style = '#0f0',
+		meterNum = 24, //count of the meters
+		YPositionArray = []; //store the vertical position of hte caps for the preivous frame
+	ctx = canvas.getContext('2d');
+	// loop
+	function renderFrame() {
+		var array = new Uint8Array(analyser.frequencyBinCount);
+		analyser.getByteFrequencyData(array);
+		var step = Math.round((array.length / 2) / meterNum); //sample limited data from the total array
+		ctx.clearRect(0, 0, cwidth, cheight);
+		for (var i = 0; i < meterNum; i++) {
+			var value = array[i * step];
+			if (YPositionArray.length < Math.round(meterNum)) {
+				YPositionArray.push(value);
+			};
+			ctx.fillStyle = style;
+			if (value < YPositionArray[i]) {
+				ctx.fillRect(i * (meterWidth + gap), cheight - (--YPositionArray[i]), meterWidth, cheight);
+			} else {
+				ctx.fillRect(i * (meterWidth + gap), cheight - value, meterWidth, cheight);
+				YPositionArray[i] = value;
+			};
+		}
+		requestAnimationFrame(renderFrame);
+	}
 	renderFrame();
-    // audio.play();
+	// audio.play();
 };
