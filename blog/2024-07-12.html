@@ -1,16 +1,47 @@
-<h1>Magma3D Devlog 1</h1>
+<h1>Magma3D Dev-log 1</h1>
 <p class="subtitle">2024-07-12</p>
 <p>
-    Last year I started developig my own game-engine in <a href="https://www.rust-lang.org/">Rust</a>. 
+    Last year I started developing my own game-engine in <a href="https://www.rust-lang.org/">Rust</a>. 
     At this point I had already done some game-dev in <i>Unity</i> and had thought about switching to <a href="https://godotengine.org/">GODOT</a>. 
     But because of the type of game I wanted to develop (a <i>SPACE</i> game) I had to constantly fight Unity's default physics implementation.<br>
     This is how the idea of developing my own engine was born.<br>
 </p>
 <h2 class="in-blog">Rust...</h2>
 <p>
-    ...I know what you're thinking: <br>
-    <i>"This guy is just another one of those average Rust fans, who won't shut up about it."</i><br>
-    But you are wrong! What you can see here is a prime example for an <i>average rust enjoyer!</i><br>
+    If I said <i>Rust</i> was the best language for everything, I would be lying.
+    But personally I use at a lot, mainly because of the compiler (It even warns you about the greek question mark).
+    Because (nearly) everything has to be specified by you, it forces you to really think about the code you are writing.
+    In my experience this has led me to catch a lot of bugs even before compiling, which removes a lot of the pain you get using languages like <i>Javascript</i> or <i>Python</i>. <br>
+    But this <b>isn't</b> always <b>important</b>! Sometimes it is worth it trading this safety for speed and simplicity. <br>
+    Anyways... I'm using <i>Rust</i> and I haven't regretted that decision until now. So let's dive into the actual topic!
+</p>
+<h2 class="in-blog">The <i>Perfect</i> Game-Engine</h2>
+<p>
+    It all started with not one, but a couple of ideas. I had been using Unity for game development for some time, but my experience had not been great.
+    After desperately trying to bend the default physics implementation to my needs I realized it.
+    It wasn't that the engine was bad, it just wasn't made for the sorta thing I was trying to do. <br>
+    So an idea started to brew in my head. <br>
+    I was gonna make my own engine, perfectly suited for my use case. In my enthusiasm I made a plan and wrote down some requirements. <br>
+    This was gonna be my <i>Magnum Opus</i>! <br>
+    <br>
+</p>
+<h3>Requirements: </h3>
+<p>
+    - High-detail voxel rendering <br>
+    - Advanced physics simulation <br>
+    - Networking <br>
+    - VR-support <br>
+    - Using other languages than Rust with <a href="https://webassembly.org/">WebAssembly</a> <br>
+    - Also has to run on <i>potatoes</i>
+</p>
+<p>
+    I was also fascinated by the <a href="https://www.wikiwand.com/en/Entity_component_system">ECS</a> architecture, especially after seeing what <a href="https://bevyengine.org/">Bevy</a> did with it.
+    So like Bevy, I was gonna have an ECS as the basis of my engine. <br>
+    To learn more about why this is cool read <a href="https://github.com/SanderMertens/ecs-faq">this</a>.
+</p>
+<h2 class="in-blog">First Part of The Journey (Pleasant)</h2>
+<p>
+    After learning about ECS, I had to <i>learn</i> how to implement it. <br>
     <br>
     to be continued...
 </p>

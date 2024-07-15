@@ -4,8 +4,13 @@
 }
 
 @keyframes planet {
-	from {left: 0pt;}
-	to {left: -670pt;}
+	from {
+		left: 0pt;
+	}
+
+	to {
+		left: -670pt;
+	}
 }
 
 .tab {

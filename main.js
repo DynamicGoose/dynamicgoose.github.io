@@ -11,7 +11,7 @@ window.addEventListener("load", function () {
 		}
 	}
 	if (this.document.getElementById('blog')) {
-		openBlog(this.sessionStorage.getItem('blog'));
+		openBlog(this.localStorage.getItem('blog'));
 	}
 	if (this.window.innerWidth <= 1200) {
 		this.document.body.style.width = '100%';
@@ -202,7 +202,7 @@ function despawnShootingStar() {
 }
 
 function setBlog(path) {
-	sessionStorage.setItem('blog', path);
+	localStorage.setItem('blog', path);
 	location.href = 'blog.html'
 }
 
@@ -222,13 +222,13 @@ function terminal_cursor() {
 }
 
 
-/* * 
+/* *
  * audio visualizer with html5 audio element
  *
  * v0.1.0
- * 
+ *
  * licenced under the MIT license
- * 
+ *
  * credit: https://github.com/wayou/
  * modified: https://github.com/DynamicGoose/
  */
@@ -241,7 +241,7 @@ function visualizer(tag) {
 	var ctx = new AudioContext();
 	var analyser = ctx.createAnalyser();
 	var audioSrc = ctx.createMediaElementSource(audio);
-	// we have to connect the MediaElementSource with the analyser 
+	// we have to connect the MediaElementSource with the analyser
 	audioSrc.connect(analyser);
 	analyser.connect(ctx.destination);
 	// we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
