@@ -39,9 +39,131 @@
     So like Bevy, I was gonna have an ECS as the basis of my engine. <br>
     To learn more about why this is cool read <a href="https://github.com/SanderMertens/ecs-faq">this</a>.
 </p>
-<h2 class="in-blog">First Part of The Journey (Pleasant)</h2>
+<h2 class="in-blog">Building an Entity-Component-System (Was Somehow Easy)</h2>
 <p>
     After learning about ECS, I had to <i>learn</i> how to implement it. <br>
-    <br>
-    to be continued...
+    My plan (which maybe wasn't the best) was to first build a simple ECS to learn how it works and then expand it mainly with multithreading.
+    The first part of the plan went quite well. I also found a lot of resources on the topic which made things a lot easier. <br>
+    The first thing that popped up after a quick search was <a href="https://ianjk.com/ecs-in-rust/">this blog post</a> by <i>Ian Kettlewell</i>, which provided me with a good grasp of the basics. <br>
+    So I spent a day or two reading and following tutorials, until I had a working prototype. <br>
+    Well... This went a bit <i>too smoothly</i>, I thought. Something had to go wrong. But somehow it actually didn't. <br>
+    <i>...for now</i>
+</p>
+<p>
+    You can find the my ECS in its current form <a href="">here</a>.
+</p>
+<h2 class="in-blog">What Bevy got right</h2>
+<p>
+    Earlier I briefly mentioned <a href="https://bevyengine.org/">Bevy</a>, but what I didn't mention was it's influence on this project. <br>
+    For those uninitiated: Bevy is another (much better than mine) game-engine written in Rust, which also uses an ECS as it's base architecture.
+    I first heard about Bevy a while before starting this project, which was the reason why I was excited for ECS in the first place.
+    When planning out the architecture of my engine, Bevy inevitably came up again. I knew it was good, but until then I hadn't realized how <i>good</i> it actually was.
+    The way their ECS works and is integrated with every functionality of the engine is blew my mind. 
+</p>
+<p>
+    After I had my prototype ECS I started implementing engine functionality on top of it, orienting myself a lot on how Bevy did things, because I just couldn't think of a better way.
+    The most important part of Bevy I copied is their <i>plugin system</i> (although I called it <i>modules</i>). <br>
+    I told you that I liked how everything in Bevy worked with it's ECS. The way they make that possible is the plugin system. Basically, "Plugin" is just a trait, that requires you to implement a "build" method.
+    In the build method, you tell Bevy what it has to do to set up the plugin. When you now add the plugin to Bevy's World (where all the applications data resides) it just executes the build method and the plugin setup is completed.
+    Simple, right? <br>
+    That is essentially what I did too. First I implemented the <i>App</i> struct, which is basically a wrapper around the ECS <i>World</i>.
+    It provides a way to add <i>Modules</i> (my Plugins) to your app and also set a custom runner.
+</p>
+<pre>
+    <code lang="rust">
+// lib.rs
+
+pub struct App {
+    pub world: World,
+    runner: fn(App),
+    modules: Vec&lt;TypeId&gt;,
+    startup_systems: Systems,
+    update_systems: Systems,
+}
+
+impl App {
+    pub fn add_module(&mut self, module: impl Module + 'static) {
+        let type_id = module.type_id();
+        if !self.modules.contains(&type_id) {
+            self.modules.push(type_id);
+            module.setup(self);
+        }
+    }
+
+    pub fn set_runner(&mut self, runner: fn(App)) {
+        self.runner = runner;
+    }
+
+    // ...
+}
+    </code>
+</pre>
+<p>
+    The code for the <i>modules</i> looks like this:
+</p>
+<pre>
+    <code lang="rust">
+// module.rs
+
+pub trait Module {
+    fn setup(&self, app: &mut App);
+}
+    </code>
+</pre>
+<p>
+    In my case, each <i>Module</i> must provide a <i>setup</i> method, which takes a mutable reference to an <i>App</i>. <br>
+    As you can see it is indeed quite simple. But very powerful.
+</p>
+<pre>
+    <code lang="rust">
+// Defining a Module and adding it to the App
+
+let mut app = App::new();
+app.add_module(ExampleModule);
+
+struct ExampleModule;
+
+impl Module for ExampleModule {
+    fn setup(&self, app: &mut App) {
+        // Setup the module
+        // E.g. register components to the World or add resources
+    }
+}
+    </code>
+</pre>
+<p>
+    This can now be used to integrate engine functionality with the ECS, but also allows the user to define their own. <br>
+    If you want to know how Bevy's <i>Plugins</i> work, have a look at <a href="https://bevyengine.org/learn/quick-start/getting-started/plugins/">this</a>.
+    You will see it is nearly the same (from an API perspective).
+</p>
+<h2 class="in-blog">Winit</h2>
+<p>
+    Now that all the groundwork was laid I could finally start developing the actual engine.
+    Among a small audio module integrating (just bare bones for now) <a href="https://crates.io/crates/kira">kira</a> I also had to have someway to create and manage windows.
+    <a href="https://crates.io/crates/winit">winit</a> is <i>the</i> rust library for that, so I just had to write a <i>simple</i> integration...
+</p>
+<p>
+    ...Winit itself is a nice library if you are writing an application. That is, it provides you with an event-loop and you just have to match the events important for you.
+    But problems arise, when one wants to integrate the winit events into an ECS (for me a least). I struggled quite a bit with making the events available to users of my engine.
+    In the end I settled for a sub-optimal solution of using winit's <i>pump_events</i>. I hope to improve this in the future and while writing this I just had an idea how.
+    Instead of making the events available to the user, I will let the user write handlers for different events, more similar to matching.
+</p>
+<h2 class="in-blog">UI</h2>
+<p>
+    I tried writing an <a href="https://crates.io/crates/iced">iced</a> integration, but that was very rushed and is so bare bones you might as well just use iced standalone.
+    In the future I'd like to write a proper UI integration (or even my own toolkit). For now though, this will have to suffice.
+</p>
+<h2 class="in-blog">Remember when I said building an ECS was easy?</h2>
+<p>
+    So... I had just started development on the renderer (I'm using <a href="https://wgpu.rs/">wgpu</a>), when I realized something:
+    Maybe I should first at least somewhat finalize the ECS so that I don't have to rewrite everything in the end, because of API changes to the ECS.
+    So I stopped everything I was doing and returned to the ECS. <br>
+    The main thing still left to do here was multithreading. I knew it was gonna be difficult, but I hadn't anticipated the scope of it.
+    To make things worse I also had never used Rust's concurrency features before and after trying and failing miserably multiple times I kinda just gave up. <br>
+    Until half a year later I had a random shower thought that seemed to be the solution. When first trying, I had read <a href="kvark.github.io/ecs/rust/2017/03/08/specs.html">this</a> blog post and so I tried to implement the same approach.
+    Wrapping my entities in an <i>RwLock</i> to make them thread save. Obviously I had failed the first time around, but now I knew how to do it right. In the end it took me just a couple of hours to do it.
+    This was accompanied by some API changes, so I am currently adopting the engine to these changes.
+</p>
+<p>
+    I will write more about how I actually achieved multithreading in my next post. And maybe I'll then be able to show you some progress on the renderer, which I have some ambitious plans for.
 </p>
