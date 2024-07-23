@@ -1,4 +1,4 @@
-<h1>Magma3D Dev-log 1</h1>
+a<h1>Magma3D Dev-log 1</h1>
 <p class="subtitle">2024-07-12</p>
 <p>
     Last year I started developing my own game-engine in <a href="https://www.rust-lang.org/">Rust</a>. 
@@ -9,19 +9,19 @@
 <h2 class="in-blog">Rust...</h2>
 <p>
     If I said <i>Rust</i> was the best language for everything, I would be lying.
-    But personally I use at a lot, mainly because of the compiler (It even warns you about the greek question mark).
+    But personally I use it a lot, mainly because of the compiler (It even warns you about the greek question mark). <br>
     Because (nearly) everything has to be specified by you, it forces you to really think about the code you are writing.
     In my experience this has led me to catch a lot of bugs even before compiling, which removes a lot of the pain you get using languages like <i>Javascript</i> or <i>Python</i>. <br>
-    But this <b>isn't</b> always <b>important</b>! Sometimes it is worth it trading this safety for speed and simplicity. <br>
+    But this <b>isn't</b> always <b>important</b>! Sometimes it's worth it trading this safety for speed and simplicity. <br>
     Anyways... I'm using <i>Rust</i> and I haven't regretted that decision until now. So let's dive into the actual topic!
 </p>
 <h2 class="in-blog">The <i>Perfect</i> Game-Engine</h2>
 <p>
     It all started with not one, but a couple of ideas. I had been using Unity for game development for some time, but my experience had not been great.
     After desperately trying to bend the default physics implementation to my needs I realized it.
-    It wasn't that the engine was bad, it just wasn't made for the sorta thing I was trying to do. <br>
-    So an idea started to brew in my head. <br>
-    I was gonna make my own engine, perfectly suited for my use case. In my enthusiasm I made a plan and wrote down some requirements. <br>
+    It wasn't that the engine was bad, it just wasn't made for the sort of thing I was trying to do. <br>
+    So an idea started to form in my head. <br>
+    I was going to make my own engine, perfectly suited for my use case. In my enthusiasm I made a plan and wrote down some requirements. <br>
     This was gonna be my <i>Magnum Opus</i>! <br>
     <br>
 </p>
@@ -37,14 +37,15 @@
 <p>
     I was also fascinated by the <a href="https://www.wikiwand.com/en/Entity_component_system">ECS</a> architecture, especially after seeing what <a href="https://bevyengine.org/">Bevy</a> did with it.
     So like Bevy, I was gonna have an ECS as the basis of my engine. <br>
+<br>
     To learn more about why this is cool read <a href="https://github.com/SanderMertens/ecs-faq">this</a>.
 </p>
 <h2 class="in-blog">Building an Entity-Component-System (Was Somehow Easy)</h2>
 <p>
-    After learning about ECS, I had to <i>learn</i> how to implement it. <br>
+    After learning about ECS, I had to learn how to implement it. <br>
     My plan (which maybe wasn't the best) was to first build a simple ECS to learn how it works and then expand it mainly with multithreading.
-    The first part of the plan went quite well. I also found a lot of resources on the topic which made things a lot easier. <br>
-    The first thing that popped up after a quick search was <a href="https://ianjk.com/ecs-in-rust/">this blog post</a> by <i>Ian Kettlewell</i>, which provided me with a good grasp of the basics. <br>
+    The first part of the plan went quite well. I also found a lot of resources on the topic which made things easier. <br>
+    The first site that popped up after a quick search was <a href="https://ianjk.com/ecs-in-rust/">this blog post</a> by <i>Ian Kettlewell</i>, which provided me with a good grasp of the basics. <br>
     So I spent a day or two reading and following tutorials, until I had a working prototype. <br>
     Well... This went a bit <i>too smoothly</i>, I thought. Something had to go wrong. But somehow it actually didn't. <br>
     <i>...for now</i>
@@ -63,7 +64,7 @@
 <p>
     After I had my prototype ECS I started implementing engine functionality on top of it, orienting myself a lot on how Bevy did things, because I just couldn't think of a better way.
     The most important part of Bevy I copied is their <i>plugin system</i> (although I called it <i>modules</i>). <br>
-    I told you that I liked how everything in Bevy worked with it's ECS. The way they make that possible is the plugin system. Basically, "Plugin" is just a trait, that requires you to implement a "build" method.
+    I told you that I liked how everything in Bevy works with it's ECS. The way they make that possible is through the plugin system. Basically, "Plugin" is just a trait that requires you to implement a "build" method.
     In the build method, you tell Bevy what it has to do to set up the plugin. When you now add the plugin to Bevy's World (where all the applications data resides) it just executes the build method and the plugin setup is completed.
     Simple, right? <br>
     That is essentially what I did too. First I implemented the <i>App</i> struct, which is basically a wrapper around the ECS <i>World</i>.
@@ -139,7 +140,7 @@ impl Module for ExampleModule {
 <h2 class="in-blog">Winit</h2>
 <p>
     Now that all the groundwork was laid I could finally start developing the actual engine.
-    Among a small audio module integrating (just bare bones for now) <a href="https://crates.io/crates/kira">kira</a> I also had to have someway to create and manage windows.
+    Among a small audio module integrating <a href="https://crates.io/crates/kira">kira</a> (just bare bones for now) I also had to have someway to create and manage windows.
     <a href="https://crates.io/crates/winit">winit</a> is <i>the</i> rust library for that, so I just had to write a <i>simple</i> integration...
 </p>
 <p>
@@ -156,11 +157,11 @@ impl Module for ExampleModule {
 <h2 class="in-blog">Remember when I said building an ECS was easy?</h2>
 <p>
     So... I had just started development on the renderer (I'm using <a href="https://wgpu.rs/">wgpu</a>), when I realized something:
-    Maybe I should first at least somewhat finalize the ECS so that I don't have to rewrite everything in the end, because of API changes to the ECS.
-    So I stopped everything I was doing and returned to the ECS. <br>
+    Maybe I should at least somewhat finalize the ECS first, so that I don't have to rewrite everything in the end, because of API changes to the ECS.
+    I stopped everything I was doing and returned to the ECS. <br>
     The main thing still left to do here was multithreading. I knew it was gonna be difficult, but I hadn't anticipated the scope of it.
     To make things worse I also had never used Rust's concurrency features before and after trying and failing miserably multiple times I kinda just gave up. <br>
-    Until half a year later I had a random shower thought that seemed to be the solution. When first trying, I had read <a href="kvark.github.io/ecs/rust/2017/03/08/specs.html">this</a> blog post and so I tried to implement the same approach.
+    Until I had a random shower thought half a year later that seemed to be the solution. When first trying, I had read <a href="https://kvark.github.io/ecs/rust/2017/03/08/specs.html">this</a> blog post and so I tried to implement the same approach.
     Wrapping my entities in an <i>RwLock</i> to make them thread save. Obviously I had failed the first time around, but now I knew how to do it right. In the end it took me just a couple of hours to do it.
     This was accompanied by some API changes, so I am currently adopting the engine to these changes.
 </p>
