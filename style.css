@@ -132,6 +132,14 @@ a {
 	color: #F77979;
 }
 
+code {
+ background-color: #180822;
+ color: #E72028;
+ font-family: "Courier New";
+ font-size: normal;
+ margin: 4px;
+}
+
 .star {
 	width: 4pt;
 	height: 4pt;
