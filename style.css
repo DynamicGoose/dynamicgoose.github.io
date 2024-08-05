@@ -72,6 +72,15 @@
 	margin-bottom: 8px;
 }
 
+.code-block {
+	background-color: #180822;
+	color: #E72028;
+	border: solid 0.6mm;
+	border-radius: 0px;
+	padding: 16px;
+	margin-bottom: 8px;
+}
+
 button {
 	font-size: large;
 	font-family: 'PerfectDos437';
@@ -134,10 +143,6 @@ a {
 
 pre {
 	background-color: #180822;
-	padding: 4px;
-	color: #E72028;
-	border: solid 0.6mm;
-	border-radius: 0px;
 }
 
 code {
