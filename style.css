@@ -132,13 +132,16 @@ a {
 	color: #F77979;
 }
 
-code {
-	font-family: "PerfectDos437";
+pre {
 	background-color: #180822;
 	padding: 4px;
 	color: #E72028;
 	border: solid 0.6mm;
 	border-radius: 0px;
+}
+
+code {
+	font-family: "PerfectDos437";
 }
 
 .star {
