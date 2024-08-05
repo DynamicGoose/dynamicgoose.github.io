@@ -134,7 +134,10 @@ a {
 
 pre {
 	background-color: #180822;
-	margin: 4px;
+	padding: 4px;
+	color: #E72028;
+	border: solid 0.6mm;
+	border-radius: 0px;
 }
 
 code {
