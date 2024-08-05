@@ -79,6 +79,7 @@
 	border-radius: 0px;
 	padding: 16px;
 	margin-bottom: 8px;
+	margin-top: 8px;
 }
 
 button {
@@ -143,6 +144,7 @@ a {
 
 pre {
 	background-color: #180822;
+	padding: 0px;
 }
 
 code {
