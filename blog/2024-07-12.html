@@ -70,8 +70,9 @@
     That is essentially what I did too. First I implemented the <i>App</i> struct, which is basically a wrapper around the ECS <i>World</i>.
     It provides a way to add <i>Modules</i> (my Plugins) to your app and also set a custom runner.
 </p>
-<pre>
-    <code lang="rust">
+<div class="code-block">
+    <pre>
+        <code lang="rust">
 // lib.rs
 
 pub struct App {
@@ -97,26 +98,30 @@ impl App {
 
     // ...
 }
-    </code>
-</pre>
+        </code>
+    </pre>
+</div>
 <p>
     The code for the <i>modules</i> looks like this:
 </p>
-<pre>
-    <code lang="rust">
+<div class="code-block">
+    <pre>
+        <code lang="rust">
 // module.rs
 
 pub trait Module {
     fn setup(&self, app: &mut App);
 }
-    </code>
-</pre>
+        </code>
+    </pre>
+</div>
 <p>
     In my case, each <i>Module</i> must provide a <i>setup</i> method, which takes a mutable reference to an <i>App</i>. <br>
     As you can see it is indeed quite simple. But very powerful.
 </p>
-<pre>
-    <code lang="rust">
+<div class="code-block">
+    <pre>
+        <code lang="rust">
 // Defining a Module and adding it to the App
 
 let mut app = App::new();
@@ -130,8 +135,9 @@ impl Module for ExampleModule {
         // E.g. register components to the World or add resources
     }
 }
-    </code>
-</pre>
+        </code>
+    </pre>
+</div>
 <p>
     This can now be used to integrate engine functionality with the ECS, but also allows the user to define their own. <br>
     If you want to know how Bevy's <i>Plugins</i> work, have a look at <a href="https://bevyengine.org/learn/quick-start/getting-started/plugins/">this</a>.
