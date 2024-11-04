@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+
+<head>
+	<script src="../main.js" type="text/javascript"></script>
+	<script src="../highlightjs/highlight.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../style.css"/>
+	<link rel="stylesheet" href="../highlightjs/styles/base16/custom.css"/>
+	<link rel="icon" type="image/png" href="../assets/favicon.png">
+	<param id="blog">
+
+	<script>hljs.highlightAll()</script>
+</head>
+
+<title>Géza's Stuff</title>
+
+<div id="stars" style="z-index: -4; left: 0; transition: left 2s; position: fixed;"></div>
+
+<div id="terminal" style="position: fixed; z-index: -2; background-color: black; color: #00ff00; font-size: 96px; width: 1000px; height: 1000px; left: 16px; top: 16px; opacity: 1; border: solid 8px; border-color: #666666; transition: opacity 2s;">
+	>_
+</div>
+
+<canvas id="canvas" width="800" height="350" style="position: fixed; z-index: -1; left: 50px; top: 50px; opacity: 0; transition: opacity 2s;"></canvas>
+
+<body style="background-color: #180822; font-family: 'PerfectDos437'; color: white; width: 60%; margin: auto;">
+	<div class="tab">
+		<button onclick="location.href = '../index.html'">< ../</button>
+	</div>
+	<div class="tabcontent">
+		<div class="site-entry" id="blogpost">
+            <h1>Magma3D Dev-Log 2</h1>
+            <p class="subtitle">2024-11-04</p>
+            <p>
+                In the last post, I promised a more detailed look at how I achieved multithreading in my ECS. 
+                As usual, things weren't quite as easy as I thought. Because of this, I also haven't gotten around to do much work on the renderer. 
+                But here you go, a deep dive into all the changes in <i>magma_ecs</i>.
+            </p>
+            <h2 class="in-blog">The First Iteration</h2>
+            <p>
+                When I initially implemented multithreading, I implemented a pretty naive approach. 
+                All I essentially did was put the <i>Entities</i> and <i>Resources</i> structs of the <i>World</i> into an <i>RwLock</i>. 
+                I then provided a method to get either a write or read lock for them. 
+                This would (I thought) be an easy and user-friendly API, but I soon realized the many flaws of my solution. <br>
+                <br>
+                (I also switched a lot of internal iterators to <a href="https://crates.io/crates/rayon">rayon</a>'s parallel iterators.) <br>
+                <br>
+            </p>
+            <h3>1. A lot of performance is left on the table:</h3>
+            <p>
+                If operating on data inside the <i>Entities</i> struct requires you to lock the whole thing, you might as well do all the operations sequentially. 
+                The only really gain in performance would be operations that don't require that data. <br>
+                <br>
+            </p>
+            <h3>2. The API is very confusing and counter-intuitive:</h3>
+            <p>
+                Above I mentioned operations that don't require data from the struct would benefit from multithreading, but this is only true if you use scopes to drop your locks after doing everything you need; 
+                otherwise, the lock is only dropped after the function finishes execution, essentially defeating the purpose of multithreading. 
+                This is not intuitive, and you have to know about it, as the compiler won't tell you. <br>
+                Another thing is the API for getting components. <br>
+                <br>
+                Instead of doing <b>entity.get_component::&ltT>().unwrap()</b> you now have to first get the component and then downcast it to the same type you gave to the method again. This is very bad!
+            </p>
+            <div class="code-block">
+                <pre><code>
+// instead of this  
+entity.get_component::&lt;T&gt;().unwrap();
+
+// you have to do this (BAD!)  
+let lock = entity.get_component::&lt;T&gt;().unwrap();  
+lock.downcast_ref::&lt;T&gt;().unwrap();
+                </code></pre>
+            </div>
+            <br>
+            <h3>3. Deadlock potential:</h3>
+            <p>
+                Using this API, it becomes very easy to create deadlocks. This means you have to know how <i>RwLock</i> works under the hood. 
+                This fails to achieve the goal of automatically running user code in parallel.
+            </p>
+            <p>
+                All these things led me to essentially rewrite the whole thing!
+            </p>
+            <h2 class="in-blog">New API for Operating on Locked Data</h2>
+            <p>
+                After contemplating solutions for all the problems I had found for some time, I came up with an idea that would seemingly eliminate all of them: using closures. <br>
+                I quickly added an <a href="https://github.com/DynamicGoose/magma-ecs/issues/18">issue</a>, describing my idea. 
+                Initially I was just going to modify <b>world.entities_write()</b>, so instead of getting a lock and then doing something with it, 
+                you would supply a closure with all the things you wanted to do, eliminating the need for scopes (and reducing the chance of creating accidental deadlocks). <br>
+                <br>
+                Implementing this, I thought about the other flaws mentioned above, which got me to rethink the implementation again. 
+                So I came up with the following proposal:
+            </p>
+            <div class="code-block">
+                <pre><code>
+world.query.with_component::&lt;Component&gt;().unwrap().run(|query_entities| {  
+    // operate on entites  
+});
+                </code></pre>
+            </div>
+            <p>
+                This, I would soon realize, forced me to redo a whole lot of other things, which I then also implemented using closures. <br>
+                Here is an example for using some of the new API:
+            </p>
+            <div class="code-block">
+                <pre><code>
+use magma_ecs::World;
+
+let mut world = World::new();  
+world.register_component::&lt;i32&gt;().unwrap();  
+world.create_entity().with_component(10_i32).unwrap();
+
+world.query()  
+    .with_component::&lt;i32&gt;()  
+    .unwrap()  
+    .run(|entities| {  
+        for entity in entities {  
+            entity  
+                .component_mut(|component: &mut i32| {  
+                    *component += 2;  
+                })
+                .unwrap();  
+        }
+    });
+                </code></pre>
+            </div>
+            <p>
+                We first create a <i>World</i> and within it an entity with an <i>i32</i> component of value 10. Then we query the world for entities with <i>i32</i> components and increase their value by 2. 
+                This in itself is not multithreaded, as it is not done using systems, which also have a new API now. <br>
+                <br>
+                I achieved this by moving the <i>RwLocks</i> from this:
+            </p>
+            <div class="code-block">
+                <pre><code>
+// lib.rs
+
+// ...
+
+#[derive(Default, Debug)]  
+pub struct World {  
+    resources: RwLock&lt;Resources&gt;,  
+    entities: RwLock&lt;Entities&gt;,
+}
+
+// ...
+                </code></pre>
+            </div>
+            <p>
+                into the <i>Resources</i> and <i>Entities</i> structs, like this:
+            </p>
+            <div class="code-block">
+                <pre><code>
+// entities.rs
+
+//...
+
+pub(crate) type Component = Arc&lt;RwLock&lt;dyn Any + Send + Sync&gt;&gt;;  
+pub(crate) type ComponentMap = HashMap&lt;TypeId, RwLock&lt;Vec&lt;Option&lt;Component&gt;&gt;&gt;&gt;;
+
+#[derive(Default, Debug)]  
+pub struct Entities {  
+    components: ComponentMap,  
+    // ...
+}
+
+// ...
+                </code></pre>
+            </div>
+            <p>
+                Notice the <i>RwLocks</i> in the <i>Component</i> and <i>ComponentMap</i> types.
+            </p>
+            <div class="code-block">
+                <pre><code>
+// resources.rs
+
+// ...
+
+#[derive(Default, Debug)]  
+pub struct Resources {  
+    data: RwLock&lt;HashMap&lt;TypeId, Arc&lt;RwLock&lt;dyn Any + Send + Sync&gt;&gt;&gt;&gt;,  
+}
+
+// ...
+                </code></pre>
+            </div>
+            <p>
+                I later implemented an API similar to the <i>Entities</i>' one for resources (see <a href="https://github.com/DynamicGoose/magma-ecs/issues/20">issue 20</a>).
+            </p>
+            <h2 class="in-blog">Systems and Dispatcher</h2>
+            <p>
+                Another thing I wanted to address was systems depending on other systems. If, for example, one system spawns an entity and another system modifies a specific component of all entities, 
+                ideally the second system would wait for the first system to finish so it can operate on all the entities. <br>
+                This is not possible when all the systems execute in parallel for obvious reasons. <br>
+                <br>
+                To give systems the ability to depend on each other, I came up with two things: the <i>Systems</i> and <i>Dispatcher</i> structs.
+            </p>
+            <div class="code-block">
+                <pre><code>
+// systems.rs
+
+// ...
+
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]  
+pub(crate) struct System {  
+    pub run: fn(&World),  
+    pub name: &'static str,  
+    pub deps: &'static [&'static str],  
+}
+
+// ...
+
+#[derive(Default, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]  
+pub struct Systems(pub(crate) Vec&lt;System&gt;);
+
+// ...
+                </code></pre>
+            </div>
+            <p>
+                The <i>Systems</i> struct holds a <i>Vec&lt;System&gt;</i>. Each <i>System</i> has a name, its dependencies, and a pointer to its function.
+            </p>
+            <div class="code-block">
+                <pre><code>
+// dispatcher.rs
+
+// ...
+
+#[derive(Default, Debug, Clone)]  
+pub struct Dispatcher(Vec&lt;Vec&lt;fn(&World)&gt;&gt;);
+
+// ...  
+                </code></pre>
+            </div>
+            <p>
+                From <i>Systems</i>, a <i>Dispatcher</i> can be built. The dispatcher holds only the function pointers, but in a 2-dimensional <i>Vec</i>. 
+                This <i>Vec</i> acts like stages, where all the systems in one stage run in parallel, but the stages themselves run sequentially. We can create a <i>Dispatcher</i> from <i>Systems</i> like this: <br>
+                <br>
+                1. Iterate through all systems and put those whose dependencies are already in the dispatcher into a new stage. The first stage are all the systems without dependencies. <br>
+                2. Add the stage to the dispatcher. <br>
+                3. Repeat until all systems are in the dispatcher. <br>
+                <br>
+                I will still be coming back to this in the future to improve some things.
+            </p>
+            <h2 class="in-blog">The final change</h2>
+            <p>
+                The last thing on my list now had to do with bitmaps. <br>
+                In my last post, I didn't really go into the inner workings of my ECS. I won't do this now either, but I will talk about a performance optimization I did. <br>
+                <br>
+                I hid this until now, but the whole <i>Entities</i> struct actually looked like this until recently:
+            </p>
+            <div class="code-block">
+                <pre><code>
+#[derive(Debug, Default)]  
+pub struct Entities {  
+    components: ComponentMap,  
+    bit_masks: HashMap&lt;TypeId, u128&gt;,  
+    map: RwLock&lt;Vec&lt;u128&gt;&gt;,  
+    into_index: RwLock&lt;usize&gt;,  
+}
+                </code></pre>
+            </div>
+            <p>
+                The way it works is like so: For every type of component, a bit mask is created in the form of an u128 integer and stored in the <i>bit_masks</i> <i>HashMap</i> along with its <i>TypeId</i>. 
+                For entities, <i>map</i> stores which components they have by adding their bit masks together. Using this, we can very quickly check and modify entities by just modifying their bitmaps. 
+                E.g., if we want to remove a component from an entity, we just set the corresponding bit in the bit map to 0, never actually touching the component's data. <br>
+                <br>
+                The only limitation this comes with is a limit of 128 different component types because we only have 128 different bits to represent them. Which is what I wanted to address. <br>
+                <br>
+                I went with an easy solution of using an existing library that implements bitmaps. My crate of choice was <a href="https://crates.io/crates/roaring">roaring</a>, 
+                which seemed to provide the most performance while also using compression and having no size limit for bit maps (technically u32 integer limit). <br>
+                <br>
+                As you can see, not a lot has changed except the <i>RoaringBitmap</i> stuff, as well as some of the implementation details, which I don't show here.
+            </p>
+            <div class="code-block">
+                <pre><code>
+#[derive(Debug, Default)]  
+pub struct Entities {  
+    components: ComponentMap,  
+    bit_masks: HashMap&lt;TypeId, u32&gt;,  
+    map: RwLock&lt;Vec&lt;RoaringBitmap&gt;&gt;,  
+    into_index: RwLock&lt;usize&gt;,
+}
+                </code></pre>
+            </div>
+            <h2 class="in-blog">When rust can't do compile-time checks...</h2>
+            <p class="subtitle">...I instantly write bugs.</p>
+
+            <p>
+                At this point, I thought I was done (with this version at least). 
+                But as you might have guessed, this wasn't quite the case. While writing tests for all the new functionality, I discovered a new bug. <br>
+                <br>
+                I wrote a test for the new <i>Systems</i>. Which had two systems execute in parallel, that looked like this:
+            </p>
+            <div class="code-block">
+                <pre><code>
+fn system_1(world: &World) {  
+    world.create_entity().with_component(1_u32).unwrap();  
+}
+
+fn system_2(world: &World) {  
+    world.create_entity().with_component(2_u32).unwrap();  
+}
+                </code></pre>
+            </div>
+            <p>
+                At first this executed just fine, but on consecutive runs it would sometimes just hang and don't complete. 
+                I immediately thought of how <i>RwLocks</i> can deadlock when one thread acquires a write lock in between two read locks from another thread. <br>
+                <br>
+                <i>From the Rust <a href="https://doc.rust-lang.org/std/sync/struct.RwLock.html">std</a> documentation on RwLock:</i>
+            </p>
+            <div class="code-block">
+                <pre><code>
+// Thread 1              |  // Thread 2  
+let _rg1 = lock.read();  |  
+                         |  // will block  
+                         |  let _wg = lock.write();  
+// may deadlock          |  
+let _rg2 = lock.read();  |  
+                </code></pre>
+            </div>
+            <p>
+                I started searching the <b>create_entity()</b> method:
+            </p>
+            <div class="code-block">
+                <pre><code>
+// entities.rs
+
+// ...
+
+impl Entities {  
+    // ...  
+
+    pub(crate) fn create_entity(&self) -> &Self {  
+        {  
+            let mut map = self.map.write().unwrap();  
+            if let Some((index, _)) = map  
+                .par_iter()  
+                .enumerate()  
+                .find_any(|(_, mask)| mask.is_empty())  
+            {  
+                *self.into_index.write().unwrap() = index;  
+            } else {  
+                self.components  
+                    .par_iter()  
+                    .for_each(|(_key, components)| components.write().unwrap().push(None));  
+                map.push(RoaringBitmap::new());  
+                *self.into_index.write().unwrap() = map.len() - 1;  
+            }  
+        }
+
+        self  
+    }
+
+    // ...  
+}
+
+// ...
+                </code></pre>
+            </div>
+            <p>
+                Can you find the bug? <br>
+                No? <br>
+                That's because there is none. <br>
+                <br>
+                Let's work through the function: <br>
+                <br>
+                1. We get a write lock on our entities bitmap. <br>
+                2. We check for some index in the bitmaps that is empty. <br>
+                3. If we find an empty spot, we set <i>self.into_index</i> to that index. Otherwise, 
+                we create a new empty spot by pushing <i>None</i> values for all components and an empty bitmap to the bitmaps. 
+                Then we set <i>into_index</i> to <i>map.len() - 1</i>. <br>
+                <br>
+                You might have some questions. For example: <br>
+                What is <i>self.into_index</i> for? <br>
+                Why show this when there is no bug? <br>
+                <br>
+                Both of those questions have to do with the actual bug. But to understand it, we first need a second method of the <i>Entities</i> struct:
+            </p>
+            <div class="code-block">
+                <pre><code>
+// entities.rs
+
+// ...
+
+impl Entities {  
+    // ...  
+    
+    pub fn with_component(&self, data: impl Any + Send + Sync) -> Result&lt;&Self, EntityError&gt; {  
+        let type_id = data.type_id();  
+        {  
+            let index = self.into_index.read().unwrap();  
+            if let Some(components) = self.components.get(&type_id) {  
+            let mut components = components.write().unwrap();  
+            let component = components  
+                .get_mut(*index)  
+                .ok_or(EntityError::ComponentNotRegistered)?;  
+            *component = Some(Arc::new(RwLock::new(data)));
+
+            let bit_mask = self.bit_masks.get(&type_id).unwrap();  
+            self.map.write().unwrap()[*index] |= bit_mask;  
+            } else {  
+                return Err(EntityError::ComponentNotRegistered);  
+            }  
+        }
+
+        Ok(self)  
+    }
+
+    // ...  
+}
+
+// ...  
+                </code></pre>
+            </div>
+            <p>
+                You might recall this method, as I also used it in the systems that led to the discovery of the bug. 
+                And as you can see, <i>self.into_index</i> appears again. We use it to determine the entity we are adding components to on entity creation. 
+                Can you see all the problems this method creates in combination with the first one? <br>
+                Don't worry, I couldn't either. <br>
+                <br>
+                So the first thing I did after this was switch to <a href="https://crates.io/crates/parking_lot">parking_lot</a>'s <i>RwLocks</i>. 
+                This is because <i>parking_lot</i> has a deadlock_detection feature and also comes with the benefit of better performance than std's solution. <br>
+                <br>
+                Using deadlock_detection, I got closer to the cause of my problem:
+            </p>
+            <div class="code-block">
+                <pre><code>
+8:      0x55977c075a63 - magma_ecs::entities::Entities::with_component::h15a283d76a106c15  
+                                at src/entities.rs:72:13  
+9:      0x55977c059d3f - systems::system_2::he05bddf393f97622  
+                                at tests/systems.rs:65:5  
+10:     0x55977c0c94e6 - magma_ecs::systems::dispatcher::Dispatcher::dispatch::{{closure}}::{{closure}}::h1bfc140e2a7ba516  
+                                at src/systems/dispatcher.rs:68:17  
+                </code></pre>
+            </div>
+            <p>
+                This backtrace points to <b>with_components()</b>, which got me on the right track.
+            </p>
+            <div class="code-block">
+                <pre><code>
+8:      0x559f5a53e973 - magma_ecs::entities::Entities::create_entity::{{closure}}::hf5bb51bbccefb4a9  
+                                at src/entities.rs:51:48  
+                </code></pre>
+            </div>
+            <p>
+                And this other backtrace points to <b>create_entitiy()</b>. <br>
+                <br>
+                In the end, it all had to do with the <i>into_index</i> field. <br>
+                Remember the potential deadlock example from the standard library docs? 
+                Because <b>create_entitiy()</b> as well as <b>with_component()</b> acquire locks to <i>self.into_index</i>, 
+                it creates exactly that scenario when run on multiple threads at the same time. But the maybe even bigger flaw is that, 
+                should a thread manage to call <b>create_entity()</b> in between another thread's calls to <b>create_entity()</b> and <b>with_component()</b>, 
+                it would screw up the whole entity creation process because the <i>into_index</i> changed. <br>
+                <br>
+                I decided to write a new implementation for <b>create_entity()</b> that would directly add the components provided to the entity. <br>
+                <br>
+                Here it is:
+            </p>
+            <div class="code-block">
+                <pre><code>
+// entities.rs
+
+// ...
+
+impl Entities {
+	// ...
+	
+	pub(crate) fn create_entity(&self, components: impl ComponentSet) -> Result<(), EntityError> {
+        let mut map = self.map.write();
+        let mut result = Ok(());
+        if let Some((index, _)) = map
+            .par_iter()
+            .enumerate()
+            .find_any(|(_, mask)| mask.is_empty())
+        {
+            components.for_components(|type_id, component| {
+                if let Some(component_vec) = self.components.get(&type_id) {
+                    let mut component_vec = component_vec.write();
+                    let component_stored = component_vec.get_mut(index).unwrap();
+                    *component_stored = Some(component);
+
+                    let bit_mask = self.bit_masks.get(&type_id).unwrap();
+                    map[index].insert(*bit_mask);
+                } else {
+                    result = Err(EntityError::ComponentNotRegistered);
+                };
+            });
+            result
+        } else {
+            self.components
+                .par_iter()
+                .for_each(|(_, components)| components.write().push(None));
+            map.push(RoaringBitmap::new());
+
+            let index = map.len() - 1;
+            components.for_components(|type_id, component| {
+                if let Some(component_vec) = self.components.get(&type_id) {
+                    let mut component_vec = component_vec.write();
+                    let component_stored = component_vec.get_mut(index).unwrap();
+                    *component_stored = Some(component);
+
+                    let bit_mask = self.bit_masks.get(&type_id).unwrap();
+                    map[index].insert(*bit_mask);
+                } else {
+                    result = Err(EntityError::ComponentNotRegistered);
+                };
+            });
+            result
+        }
+    }
+    
+    // ...
+}
+                </code></pre>
+            </div>
+            <p>
+                This takes a parameter that implements <i>ComponentSet</i>, which is a trait I defined to be able to add multiple different types of components at the same time.
+            </p>
+            <div class="code-block">
+                <pre><code>
+// component_set.rs
+
+// ...
+
+pub trait ComponentSet {
+    fn for_components&lt;R: FnMut(TypeId, Arc&lt;RwLock&lt;dyn Any + Send + Sync&gt;&gt;)&gt;(self, run: R);
+}
+
+// ...
+                </code></pre>
+            </div>
+            <p>
+                I implemented this for tuples up to the length of ten. Maybe I will refactor this into a macro in the future. <br>
+                <br>
+                This trait also adds the possibility of user-defined <i>ComponentSets</i>. But this is a thing to think about in the future.
+            </p>
+            <h2 class="in-blog">Putting everything together</h2>
+            <p>
+                At last, I have provided an example of all the new functionality working together. 
+                I didn't go into <b>create_entity_batch()</b> because it is just <b>create_entity()</b> but optimized for creating large amounts of the same entity. 
+                Maybe in a future blog post?
+            </p>
+            <div class="code-block">
+                <pre><code>
+// main.rs
+
+use magma_ecs::World;
+use magma_ecs::systems::Systems;
+
+
+fn main() {
+	let mut world = World::new();
+
+	// register our component types
+	world.register_component::&lt;Position&gt;();
+	world.register_component::&lt;Rotation&gt;();
+
+	// add update counter resource
+	world.add_resource(UpdateCounter(0)).unwrap();
+
+	// create entities with Position and Rotation components
+	world.create_entity_batch((Position(0, 0, 0), Rotation(0, 0, 0)), 100).unwrap();
+
+	// create and run dispatcher
+	let systems = Systems::new()
+	    .with(spawn_entity, "spawn_entity", &[])
+	    .with(move_entities, "move_entities", &["spawn_entity"])
+	    .with(delete_when_limit, "delete_when_limit", &["spawn_entity"])
+	    .with(update_count, "update_count", &["move_entities", "delete_when_limit"]);
+	let dispatcher = systems.build_dispatcher();
+
+	loop {
+		dispatcher.dispatch(&world);
+	}
+}
+
+// our systems
+fn move_entities(world: &World) {
+	world.query()
+		.with_component::&lt;Position&gt;()
+		.unwrap()
+		.with_component::&lt;Rotation&gt;()
+		.unwrap()
+		.run(|entities| {
+			for entity in entities {
+                entity
+                    .component_mut(|component: &mut Position| {
+                        component.0 += 2;
+                    })
+                    .unwrap();
+            }
+		});
+}
+
+fn spawn_entity(world: &World) {
+	world.create_entity((Position(0, 0, 0), Rotation(0, 0, 0))).unwrap();
+}
+
+fn delete_when_limit(world: &World) {
+	world.query()
+		.with_component::&lt;Position&gt;()
+		.unwrap()
+		.with_component::&lt;Rotation&gt;()
+		.unwrap()
+		.run(|entities| {
+			if entities.len() > 200 {
+				for entity in entities {
+					entity.delete();
+				}
+			}
+		})
+}
+
+fn update_count(world: &World) {
+	world.resource_mut(|count: &mut UpdateCounter| count += 1).unwrap();
+}
+
+// Our component types
+struct Position(i32, i32, i32);
+struct Rotation(i32, i32, i32);
+
+// Our resources
+struct UpdateCounter(u32);
+                </code></pre>
+            </div>
+            <p>See you in the next post :3</p>
+		</div>
+	</div>
+</body>
