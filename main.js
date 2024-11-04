@@ -10,9 +10,6 @@ window.addEventListener("load", function () {
 			this.document.getElementById('TabHome').click()
 		}
 	}
-	if (this.document.getElementById('blog')) {
-		openBlog(this.localStorage.getItem('blog'));
-	}
 	if (this.window.innerWidth <= 1200) {
 		this.document.body.style.width = '100%';
 	} else {
@@ -199,15 +196,6 @@ function shootingStar() {
 
 function despawnShootingStar() {
 	document.getElementById('shooting-star').remove();
-}
-
-function setBlog(path) {
-	localStorage.setItem('blog', path);
-	location.href = 'blog.html'
-}
-
-function openBlog(path) {
-	fetch(path).then(response => response.text()).then(text => document.getElementById('blogpost').innerHTML = text);
 }
 
 function terminal_cursor() {
