@@ -20,16 +20,10 @@ window.addEventListener("load", function () {
 	canvas.width = this.window.innerWidth - 100;
 	canvas.height = this.window.innerHeight - 100;
 
-	var terminal = this.document.getElementById('terminal');
-	terminal.style.width = this.window.innerWidth - 50 + 'px';
-	terminal.style.height = this.window.innerHeight - 50 + 'px';
-
 	if (this.document.getElementsByTagName('shooting-star').length >= 1) {
 		shootingStar();
 	}
 	stars();
-
-	this.setInterval(terminal_cursor, 500);
 });
 
 window.addEventListener("resize", function () {
@@ -42,10 +36,6 @@ window.addEventListener("resize", function () {
 	var canvas = this.document.getElementById('canvas');
 	canvas.width = this.window.innerWidth - 100;
 	canvas.height = this.window.innerHeight - 100;
-
-	var terminal = this.document.getElementById('terminal');
-	terminal.style.width = this.window.innerWidth - 50 + 'px';
-	terminal.style.height = this.window.innerHeight - 50 + 'px';
 
 	stars();
 })
@@ -86,9 +76,14 @@ function transition(to) {
 			station.style.transform = 'rotate(-10deg)';
 			station.style.width = '1024px';
 
+			var computer = document.getElementById('computer');
+			computer.style.left = '1000pt';
+			computer.style.top = '600pt';
+			computer.style.transform = 'rotate(-20deg)';
+			computer.style.width = '512px';
+
 			document.getElementById('stars').style.left = '0';
 
-			document.getElementById('terminal').style.opacity = '0';
 			document.getElementById('canvas').style.opacity = '0';
 			document.getElementById('audio').pause();
 
@@ -104,9 +99,14 @@ function transition(to) {
 			station.style.transform = 'rotate(0deg)';
 			station.style.width = '1024px';
 
+			var computer = document.getElementById('computer');
+			computer.style.left = '330pt';
+			computer.style.top = '750pt';
+			computer.style.transform = 'rotate(45deg)';
+			computer.style.width = '512px';
+
 			document.getElementById('stars').style.left = '-200px'
 
-			document.getElementById('terminal').style.opacity = '0';
 			document.getElementById('canvas').style.opacity = '0';
 			document.getElementById('audio').pause();
 
@@ -117,14 +117,19 @@ function transition(to) {
 			document.getElementById('planet').style.left = '-1340pt';
 
 			var station = document.getElementById('station');
-			station.style.right = '-11000pt';
-			station.style.top = '-8000pt';
+			station.style.right = '-1000pt';
+			station.style.top = '-1000pt'
 			station.style.transform = 'rotate(0deg)';
-			station.style.width = '32000px'
+			station.style.width = '2048px';
 
-			document.getElementById('stars').style.left = '-200px';
+			var computer = document.getElementById('computer');
+			computer.style.left = '200pt';
+			computer.style.top = '400pt';
+			computer.style.transform = 'rotate(0deg)';
+			computer.style.width = '1024px';
 
-			document.getElementById('terminal').style.opacity = '1';
+			document.getElementById('stars').style.left = '-100px';
+
 			document.getElementById('canvas').style.opacity = '0';
 			document.getElementById('audio').pause();
 
@@ -132,17 +137,22 @@ function transition(to) {
 
 			break;
 		case 'Music':
-			document.getElementById('planet').style.left = '-2010pt';
+			document.getElementById('planet').style.left = '-1340pt';
 
 			var station = document.getElementById('station');
-			station.style.right = '-11000pt';
-			station.style.top = '-8000pt';
+			station.style.right = '-1000pt';
+			station.style.top = '-1000pt'
 			station.style.transform = 'rotate(0deg)';
-			station.style.width = '32000px'
+			station.style.width = '2048px';
 
-			document.getElementById('stars').style.left = '-200px';
+			var computer = document.getElementById('computer');
+			computer.style.left = '-175pt';
+			computer.style.top = '-175pt';
+			computer.style.transform = 'rotate(0deg)';
+			computer.style.width = (window.innerWidth + 500).toString().concat('px');
 
-			document.getElementById('terminal').style.opacity = '1';
+			document.getElementById('stars').style.left = '-100px';
+
 			document.getElementById('canvas').style.opacity = '1';
 			document.getElementById('audio').play();
 
@@ -197,18 +207,6 @@ function shootingStar() {
 function despawnShootingStar() {
 	document.getElementById('shooting-star').remove();
 }
-
-function terminal_cursor() {
-	terminal = document.getElementById('terminal');
-	if (show_cursor) {
-		terminal.innerHTML = '>_';
-		show_cursor = false;
-	} else {
-		terminal.innerHTML = '>';
-		show_cursor = true;
-	}
-}
-
 
 /* *
  * audio visualizer with html5 audio element
