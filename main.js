@@ -40,9 +40,9 @@ window.addEventListener("resize", function () {
 	stars();
 })
 
-document.getElementById('audio').addEventListener("onpause", function () {
-	play_visualizer = false;
-});
+// document.getElementById('audio').addEventListener("onpause", function () {
+// 	play_visualizer = false;
+// });
 
 function openTab(evt, tabName) {
 	var i, tabcontent, tablinks;
@@ -85,7 +85,6 @@ function transition(to) {
 			document.getElementById('stars').style.left = '0';
 
 			document.getElementById('canvas').style.opacity = '0';
-			document.getElementById('audio').pause();
 
 			shooting_star = true;
 
@@ -108,7 +107,6 @@ function transition(to) {
 			document.getElementById('stars').style.left = '-200px'
 
 			document.getElementById('canvas').style.opacity = '0';
-			document.getElementById('audio').pause();
 
 			shooting_star = true;
 
@@ -131,7 +129,6 @@ function transition(to) {
 			document.getElementById('stars').style.left = '-100px';
 
 			document.getElementById('canvas').style.opacity = '0';
-			document.getElementById('audio').pause();
 
 			shooting_star = false;
 
@@ -154,7 +151,6 @@ function transition(to) {
 			document.getElementById('stars').style.left = '-100px';
 
 			document.getElementById('canvas').style.opacity = '1';
-			document.getElementById('audio').play();
 
 			shooting_star = false;
 
