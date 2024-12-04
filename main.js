@@ -115,18 +115,18 @@ function transition(to) {
 			document.getElementById('planet').style.left = '-1340pt';
 
 			var station = document.getElementById('station');
-			station.style.right = '-1000pt';
+			station.style.right = '0';
 			station.style.top = '-1000pt'
 			station.style.transform = 'rotate(0deg)';
 			station.style.width = '2048px';
 
 			var computer = document.getElementById('computer');
-			computer.style.left = '200pt';
-			computer.style.top = '400pt';
+			computer.style.left = '100pt';
+			computer.style.top = '100pt';
 			computer.style.transform = 'rotate(0deg)';
 			computer.style.width = '1024px';
 
-			document.getElementById('stars').style.left = '-100px';
+			document.getElementById('stars').style.left = '-250px';
 
 			document.getElementById('canvas').style.opacity = '0';
 
@@ -137,7 +137,7 @@ function transition(to) {
 			document.getElementById('planet').style.left = '-1340pt';
 
 			var station = document.getElementById('station');
-			station.style.right = '-1000pt';
+			station.style.right = '0';
 			station.style.top = '-1000pt'
 			station.style.transform = 'rotate(0deg)';
 			station.style.width = '2048px';
@@ -148,7 +148,7 @@ function transition(to) {
 			computer.style.transform = 'rotate(0deg)';
 			computer.style.width = (window.innerWidth + 500).toString().concat('px');
 
-			document.getElementById('stars').style.left = '-100px';
+			document.getElementById('stars').style.left = '-250px';
 
 			document.getElementById('canvas').style.opacity = '1';
 
@@ -165,7 +165,7 @@ function stars() {
 	}
 
 	for (var i = 0; i < ((window.innerHeight * window.innerWidth) / 4000); i++) {
-		var x = Math.random() * (window.innerWidth + 200);
+		var x = Math.random() * (window.innerWidth + 250);
 		var y = Math.random() * window.innerHeight;
 		var star = document.createElement('div');
 		star.className = 'star';

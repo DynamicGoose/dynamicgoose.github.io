@@ -1,2 +1,4 @@
 site background planet + shooting star: https://shiroze.itch.io/starry-night-parallax-background
 audio visualizer: https://github.com/wayou/
+computer.gif: Creator Unknown
+christmas icons: https://asymmetric.itch.io/christmas-pixel-art-icon-pack
