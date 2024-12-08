@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<head>
+	<script src="../main.js" type="text/javascript"></script>
+	<script src="../highlightjs/highlight.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../style.css"/>
+	<link rel="stylesheet" href="../highlightjs/custom.css"/>
+	<link rel="icon" type="image/png" href="../assets/favicon.png">
+	<param id="blog">
+
+	<script>hljs.highlightAll()</script>
+</head>
+
+<title>Advent of Code 2024: Update 1</title>
+
+<div id="stars" style="z-index: -4; left: 0; transition: left 2s; position: fixed;"></div>
+<img id="present_red" style="position: fixed; z-index: -3; image-rendering: pixelated; right: 200pt; top: 500pt; width: 128px; transition: all 2s; transform: rotate(-20deg);" src="/assets/christmas_icons/RedPresentIcon.png">
+<img id="computer" style="position: fixed; z-index: -3; image-rendering: pixelated; left: 100pt; top: 400pt; width: 128px; transition: all 2s; transform: rotate(45deg);" src="/assets/christmas_icons/GreenPresentIcon.png">
+<img id="computer" style="position: fixed; z-index: -3; image-rendering: pixelated; left: 250pt; top: 600pt; width: 256px; transition: all 2s; transform: rotate(180deg);" src="/assets/christmas_icons/ChristmasTreeIcon.png">
+
+<canvas id="canvas" width="800" height="350" style="position: fixed; z-index: -1; left: 50px; top: 50px; opacity: 0; transition: opacity 2s;"></canvas>
+
+<body style="background-color: #180822; font-family: 'PerfectDos437'; color: white; width: 60%; margin: auto;">
+	<div class="tab">
+		<button onclick="location.href = '../index.html'">< ../</button>
+	</div>
+	<div class="tabcontent">
+		<div class="site-entry" id="blogpost">
+            <h1>Advent of Code 2024: Update 1</h1>
+            <p class="subtitle">2024-12-08</p>
+            <p>
+                A quick update on my progress on Advent of code!
+            </p>
+            <h2 class="in-blog">Day 1 - 3</h2>
+            <p>
+                These first couple of days were not that interesting as I just stayed in my comfort zone.
+                On day one I used <i>Rust</i> and on day two and three I used <i>Python</i>.
+            </p>
+            <h2 class="in-blog">Day 4</h2>
+            <p>
+                A language I had been wanting to try out was <a href="https://www.haskell.org/">Haskell</a>. 
+                Haskell is a compiled, purely functional language. 
+                I really like the functional approach to programming and the way you have to think about it. <br>
+                After following their <a href="https://www.haskell.org/get-started/">get started</a> page and setting everything up I started my work.
+            </p>
+            <p>
+                If you had a look at my <a href="https://github.com/DynamicGoose/advent-of-code-2024">repo</a>, you would ask yourself: "Why did he say he used Haskell when all the code in the day_04 folder is written in Lua?" <br>
+                Well... <br>
+                I severely underestimated the amount of time it would take me to learn Haskell and in the end, I gave up and used <a href="https://www.lua.org/">Lua</a> instead.
+                Lua is a small scripting language that is ment to be easy to embed into a project. Writig day 4 in Lua made things quite a bit easier.
+                The only thing that took a bit of time to wrap my head around were lua <a href="https://www.lua.org/pil/2.5.html">tables</a>. (And also that they start at index 1)
+            </p>
+            <h2 class="in-blog">Day 5</h2>
+            <p>
+                On day 5 I used <i>C</i>. Everyone has to learn a bit of C at some point. And though I used it in the past, my C skills had become pretty rusty.
+                It took me a bit to solve the first puzzle, but I could reuse most of the conde from puzzle 1 in puzzle 2.
+            </p>
+            <h2 class="in-blog">Day 6</h2>
+            <p>
+                On day 6 I decided to use <a href="https://www.scala-lang.org/">Scala</a>. Scala runs on the <a href="https://www.wikiwand.com/en/articles/Java_virtual_machine">JVM</a>.
+                That means it also has interoperability with Java. Scala is a bit more on the functional side though. <br>
+                I did not have a lot of time on the 6th so I had to do most of the work for day 6 on the 7th.
+            </p>
+            <h2 class="in-blog">Next...</h2>
+            <p>
+                I have decided to revisit <i>Haskell</i>. It will probably take some time to learn the basics and I will probably have to catch up on the puzzles. <br>
+                My reason for doing this is because I find Haskell (and the concept of functional programming in general) very interesting.
+                After starting to learn Haskell I am also beginning to change the way I look at programming problems, which feels very refreshing and exciting. <br>
+                If you want to look into Haskell yourself, I have found the following resources very useful/enlightening: <br> 
+                <br>
+                - <a href="https://haskyll.github.io/">Haskell bit by bit</a> -> exactly what it says <br>
+                - <a href="https://www.youtube.com/watch?v=voRBS0r4EyI">In search of Code Purity</a> -> A rust focused look at functional programming. (Make sure to watch the chapter about pure functions) <br>
+                - <a href="https://www.youtube.com/watch?v=iSmkqocn0oQ">Haskell is Useless</a> -> A (in my opinion) very good take on functional programming by Simon Peyton Jones
+            </p>
+            <p>
+                Until next post. <br>
+                ^_^
+            </p>
+        </div>
+	</div>
+</body>
