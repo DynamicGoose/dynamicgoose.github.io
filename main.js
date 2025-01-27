@@ -214,11 +214,21 @@ function sortBlog(by) {
 			var sortedBlogs = data
 			switch (by) {
 				case "date":
-					
+					sortedBlogs = data.sort((a, b) => a.date.localeCompare((b.date)));
 					break;
-			
+				case "title":
+					sortedBlogs = data.sort((a, b) => a.title.localeCompare((b.title)));
+					break;
 				default:
 					break;
+			}
+			for (var i = 0; i < sortedBlogs.length; i++) {
+				var div = document.createElement("div");
+				div.className = "site-entry";
+				div.innerHTML = '<h2>' + sortedBlogs[i].title + '</h2>'
+					+ '<p class="subtitle">' + sortedBlogs[i].date + '</p>'
+					+ '<p>' + sortedBlogs[i].desc + '<br>' + '<a href="blog/' + sortedBlogs[i].file + '">more...</a></p>';
+				blogContainer.appendChild(div);
 			}
 		})
 		.then(function (err) {
