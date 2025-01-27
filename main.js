@@ -204,6 +204,28 @@ function despawnShootingStar() {
 	document.getElementById('shooting-star').remove();
 }
 
+function sortBlog(by) {
+	fetch("blog.json")
+		.then(function (response) {
+			return response.json();
+		})
+		.then(function (data) {
+			var blogContainer = document.getElementById("Blog");
+			var sortedBlogs = data
+			switch (by) {
+				case "date":
+					
+					break;
+			
+				default:
+					break;
+			}
+		})
+		.then(function (err) {
+			console.log(err);
+		});
+}
+
 /* *
  * audio visualizer with html5 audio element
  *
